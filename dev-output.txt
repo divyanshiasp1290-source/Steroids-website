@@ -1,0 +1,94 @@
+
+> dev
+> vite dev
+
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+Port 8080 is in use, trying another one...
+
+  [32m[1mVITE[22m v8.2.0[39m  [2mready in [0m[1m21674[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8081[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.43:[1m8081[22m/[39m  [2mEthernet[22m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+[2m2:12:44 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m connected.
+[2m2:18:28 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[2m2:18:30 PM[22m [36m[1m[vite][22m[39m server restarted.
+[2m2:18:30 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m connected.
+[2m2:19:12 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[2m2:19:12 PM[22m [36m[1m[vite][22m[39m server restarted.
+[2m2:19:13 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m connected.
+[2m2:58:12 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/auth.tsx, /src/routes/auth.tsx?tsr-split=component[22m
+[2m2:58:12 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/auth.tsx[22m
+[2m2:58:12 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m program reload
+[2m2:58:35 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/account.tsx?tsr-split=component, /src/routes/admin.tsx?tsr-split=component, /src/components/admin/AdminShell.tsx, /src/routes/auth.tsx?tsr-split=component[22m
+[2m2:58:35 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/lib/auth.ts[22m
+[2m2:58:54 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m2:58:54 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m
+[2m2:59:14 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m2:59:14 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m
+[2m2:59:46 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m2:59:46 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m
+[2m3:00:02 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Footer.tsx[22m
+[2m3:00:02 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Footer.tsx[22m
+[2m3:00:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Footer.tsx[22m
+[2m3:00:23 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Footer.tsx[22m
+[2m3:01:50 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct[22m
+[2m3:01:51 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/server.ts[22m
+[2m3:01:51 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m program reload
+[admin] ADMIN_EMAIL / ADMIN_PASSWORD not set in this environment — skipping admin provisioning.
+[2m3:03:02 PM[22m [36m[1m[vite][22m[39m [32m.env changed, restarting server...[39m
+[33mThe plugin "vite-tsconfig-paths" is detected. Vite now supports tsconfig paths resolution natively via the [1mresolve.tsconfigPaths[22m option. You can remove the plugin and set [1mresolve.tsconfigPaths: true[22m in your Vite config instead.[39m
+[2m3:03:09 PM[22m [36m[1m[vite][22m[39m server restarted.
+[2m3:03:10 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m connected.
+[Supabase] Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY. Connect Supabase in Lovable Cloud.
+[admin] Failed to provision admin account: Error: Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY. Connect Supabase in Lovable Cloud.
+    at createSupabaseAdminClient (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:38:9)
+    at Object.get (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:55:40)
+    at ensureAdminUser (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:19:71)
+    at eval (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:20:51)
+    at eval (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:28:3)
+    at async ESModulesEvaluator.runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:3)
+    at async ModuleRunner.directRequest (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1263:59)
+    at async ModuleRunner.cachedRequest (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1170:73)
+    at async ModuleRunner.import (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1124:10)
+    at async file:///C:/Users/pc/Downloads/steroids%20website/node_modules/@tanstack/start-plugin-core/dist/esm/vite/dev-server-plugin/plugin.js:79:43
+[2m3:57:06 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/admin.index.tsx, /src/routes/admin.index.tsx?tsr-split=component[22m
+[2m3:57:06 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/admin.index.tsx[22m
+[2m3:57:06 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m program reload
+[Supabase] Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY. Connect Supabase in Lovable Cloud.
+[admin] Failed to provision admin account: Error: Missing Supabase environment variable(s): SUPABASE_SERVICE_ROLE_KEY. Connect Supabase in Lovable Cloud.
+    at createSupabaseAdminClient (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:38:9)
+    at Object.get (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:55:40)
+    at ensureAdminUser (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:19:71)
+    at eval (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:20:51)
+    at eval (eval at runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:9), <anonymous>:28:3)
+    at async ESModulesEvaluator.runInlinedModule (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1010:3)
+    at async ModuleRunner.directRequest (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1263:59)
+    at async ModuleRunner.cachedRequest (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1170:73)
+    at async ModuleRunner.import (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:1124:10)
+    at async file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/module-runner.js:776:7
+[2m3:57:41 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/admin.index.tsx, /src/routes/admin.index.tsx?tsr-split=component[22m
+[2m3:57:41 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/admin.index.tsx[22m
+Error: Error transforming route file C:/Users/pc/Downloads/steroids website/src/routes/admin.index.tsx: SyntaxError: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (148:6)
+    at file:///C:/Users/pc/Downloads/steroids%20website/node_modules/@tanstack/router-generator/dist/esm/generator.js:143:13
+    at async generate (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:39:4)
+    at async PluginContext.watchChange (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/@tanstack/router-plugin/dist/esm/core/router-generator-plugin.js:49:4)
+    at async Promise.all (index 2)
+    at async EnvironmentPluginContainer.hookParallel (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/chunks/node.js:30651:3)
+    at async EnvironmentPluginContainer.watchChange (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/chunks/node.js:30822:3)
+    at async Promise.all (index 0)
+    at async onFileChange (file:///C:/Users/pc/Downloads/steroids%20website/node_modules/vite/dist/node/chunks/node.js:26485:3)
+[2m3:58:08 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/admin.index.tsx, /src/routes/admin.index.tsx?tsr-split=component[22m
+[2m3:58:08 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/admin.index.tsx[22m
+[2m3:59:01 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/routes/admin.index.tsx, /src/routes/admin.index.tsx?tsr-split=component[22m
+[2m3:59:01 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/routes/admin.index.tsx[22m
+[2m4:35:56 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m4:35:56 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m
+[2m4:36:23 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m4:36:23 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m
+[2m4:37:21 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m4:37:21 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m
+[2m4:37:50 PM[22m [36m[1m[vite][22m[39m [90m[2m(client)[22m[39m [32mhmr update [39m[2m/src/styles.css?direct, /src/components/layout/Header.tsx[22m
+[2m4:37:50 PM[22m [36m[1m[vite][22m[39m [34m[2m(ssr)[22m[39m [32mpage reload [39m[2msrc/components/layout/Header.tsx[22m

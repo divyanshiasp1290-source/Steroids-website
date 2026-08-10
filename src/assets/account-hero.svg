@@ -1,0 +1,26 @@
+<svg width="1920" height="1280" viewBox="0 0 1920 1280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Abstract healthcare account banner">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09192e" />
+      <stop offset="100%" stop-color="#202f4b" />
+    </linearGradient>
+    <linearGradient id="shape" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78c7ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#4b7bff" stop-opacity="0.6" />
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1280" fill="url(#bg)" />
+  <circle cx="500" cy="650" r="360" fill="url(#shape)" opacity="0.9" />
+  <circle cx="1450" cy="350" r="260" fill="#60b1ff" opacity="0.35" />
+  <rect x="340" y="450" width="880" height="540" rx="120" fill="#ffffff" opacity="0.05" />
+  <rect x="1130" y="690" width="640" height="320" rx="120" fill="#ffffff" opacity="0.08" />
+  <g fill="none" stroke="#ffffff" stroke-width="18" opacity="0.4">
+    <path d="M420 320 C620 180, 900 260, 1080 340" />
+    <path d="M1200 920 C1340 760, 1540 780, 1710 820" />
+  </g>
+  <g fill="#ffffff" opacity="0.9">
+    <rect x="440" y="640" width="260" height="28" rx="14" />
+    <rect x="440" y="700" width="180" height="18" rx="9" opacity="0.7" />
+    <rect x="440" y="740" width="320" height="18" rx="9" opacity="0.7" />
+  </g>
+</svg>
