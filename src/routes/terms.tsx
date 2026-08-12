@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PolicyPage } from "@/components/legal/PolicyPage";
 import termsBanner from "@/assets/hero.jpg";
 
-const title = "Terms & Conditions — Helix Pharma UK";
-const description = "The terms that govern purchases and use of the Helix Pharma UK storefront.";
+const title = "Terms & Conditions — Medi Pharma UK";
+const description = "The terms that govern purchases and use of the Medi Pharma UK storefront.";
 
 export const Route = createFileRoute("/terms")({
   head: () => ({
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/terms")({
     <PolicyPage
       eyebrow="Legal"
       title="Terms & conditions"
-      description="The agreement between you and Helix Pharma UK when you shop with us."
+      description="The agreement between you and Medi Pharma UK when you shop with us."
       updated="1 January 2026"
       image={termsBanner}
       imageAlt="Terms"
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/terms")({
         {
           heading: "Using this site",
           body: [
-            "By browsing or ordering from Helix Pharma UK you accept these terms. If you do not accept them, please do not place an order.",
+            "By browsing or ordering from Medi Pharma UK you accept these terms. If you do not accept them, please do not place an order.",
           ],
         },
         {

@@ -17,9 +17,9 @@ import { ProductGridSkeleton } from "@/components/ui-kit/Skeletons";
 import { productsQuery } from "@/lib/queries";
 import type { Product, ProductFilters, ProductSort } from "@/lib/types";
 
-const title = "Shop All Medicines — Helix Pharma UK";
+const title = "Shop All Medicines — Medi Pharma UK";
 const description =
-  "Filter the full Helix Pharma catalogue by category, price, availability and customer rating.";
+  "Filter the full Medi Pharma catalogue by category, price, availability and customer rating.";
 
 type ShopSearch = {
   q?: string | undefined;

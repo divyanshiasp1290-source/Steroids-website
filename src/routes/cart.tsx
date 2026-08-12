@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { formatPrice } from "@/lib/format";
 import { useStore } from "@/lib/store";
 
-const title = "Shopping Bag — Helix Pharma UK";
+const title = "Shopping Bag — Medi Pharma UK";
 const description = "Review the pieces in your bag and continue to a secure, insured checkout.";
 
 export const Route = createFileRoute("/cart")({

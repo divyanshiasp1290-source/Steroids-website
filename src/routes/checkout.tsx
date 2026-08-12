@@ -14,7 +14,7 @@ import { useQuery } from "@tanstack/react-query";
 import { activeCouponsQuery } from "@/lib/queries";
 import { fetchCoupons } from "@/lib/api";
 
-const title = "Secure Checkout — Helix Pharma UK";
+const title = "Secure Checkout — Medi Pharma UK";
 const description = "Complete your order with insured worldwide delivery and a two-year guarantee.";
 
 export const Route = createFileRoute("/checkout")({

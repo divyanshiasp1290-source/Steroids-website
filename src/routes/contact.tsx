@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -10,9 +10,9 @@ import { sendContactMessage } from "@/lib/api";
 import { settingsQuery, bannersQuery } from "@/lib/queries";
 
 
-const title = "Contact Helix Pharma UK — Client Care & Enquiries";
+const title = "Contact Medi Pharma UK — Client Care & Enquiries";
 const description =
-  "Reach the Helix Pharma UK client care team for orders, sourcing requests, press and wholesale enquiries.";
+  "Reach the Medi Pharma UK client care team for orders, sourcing requests, press and wholesale enquiries.";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -27,10 +27,10 @@ export const Route = createFileRoute("/contact")({
 });
 
 const FALLBACK = {
-  email: "care@helixpharma.co.uk",
+  email: "care@Medipharma.co.uk",
   phone: "+44 161 555 0142",
-  address: "Unit 12 Trafford Point, Manchester M17 1AB, United Kingdom",
-  hours: "Mon–Sun, 8am–8pm",
+  address: "Gospodarcza 26, 20-213 Lublin, Polska",
+  hours: "10Am - 6PM", 
 };
 
 function Contact() {
@@ -80,9 +80,12 @@ function Contact() {
               </div>
             </div>
           ))}
-          <div className="border-t border-border pt-6">
-            <p className="label-caps">Hours</p>
-            <p className="mt-1 text-sm text-muted-foreground">{contact.hours}</p>
+          <div className="flex gap-4 border-t border-border pt-6">
+            <Clock className="mt-1 h-4 w-4 shrink-0 text-accent" />
+            <div className="min-w-0">
+              <p className="label-caps">Hours</p>
+              <p className="mt-1 text-sm text-foreground">{contact.hours}</p>
+            </div>
           </div>
         </div>
 

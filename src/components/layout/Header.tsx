@@ -89,7 +89,7 @@ export function Header() {
               isAdmin ? "" : "lg:justify-self-start lg:text-[1.4rem]",
             )}
           >
-            Helix<span className="text-accent">Pharma</span>
+            Medi<span className="text-accent">Pharma</span>
           </Link>
 
 {!isAdmin ? (

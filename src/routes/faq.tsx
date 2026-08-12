@@ -11,9 +11,9 @@ import {
 import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { faqsQuery } from "@/lib/queries";
 
-const title = "Frequently Asked Questions — Helix Pharma UK";
+const title = "Frequently Asked Questions — Medi Pharma UK";
 const description =
-  "Answers on shipping, returns, guarantees, materials and care for Helix Pharma UK orders.";
+  "Answers on shipping, returns, guarantees, materials and care for Medi Pharma UK orders.";
 
 export const Route = createFileRoute("/faq")({
   head: () => ({

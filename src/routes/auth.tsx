@@ -1,13 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
 import { signIn, signOut, useAuth } from "@/lib/auth";
-import { fetchIsAdmin } from "@/lib/api";
 
-const title = "Admin Sign In — Helix Pharma UK";
+const title = "Admin Sign In — Medi Pharma UK";
 const description = "Restricted area. Authorized administrators only.";
 
 export const Route = createFileRoute("/auth")({
@@ -31,34 +29,17 @@ function AuthPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { data: isAdmin } = useQuery({
-    queryKey: ["is-admin", user?.id],
-    queryFn: () => fetchIsAdmin(user!.id),
-    enabled: Boolean(user),
-  });
-
-  useEffect(() => {
-    if (user && isAdmin) {
-      navigate({ to: "/admin" });
-    }
-  }, [user, isAdmin, navigate]);
-
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setBusy(true);
     try {
       await signIn(form.email, form.password);
       toast.success("Welcome back.");
-      navigate({ to: "/admin" });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Something went wrong.");
     } finally {
       setBusy(false);
     }
-  }
-
-  if (user && isAdmin) {
-    return null;
   }
 
   if (user) {

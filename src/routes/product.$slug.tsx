@@ -26,17 +26,17 @@ export const Route = createFileRoute("/product/$slug")({
   head: ({ loaderData }) => {
     if (!loaderData) {
       return {
-        meta: [{ title: "Product unavailable — Helix Pharma UK" }, { name: "robots", content: "noindex" }],
+        meta: [{ title: "Product unavailable — Medi Pharma UK" }, { name: "robots", content: "noindex" }],
       };
     }
     const { product } = loaderData;
     const description =
-      product.short_description ?? `${product.name} — available now at Helix Pharma UK.`;
+      product.short_description ?? `${product.name} — available now at Medi Pharma UK.`;
     return {
       meta: [
-        { title: `${product.name} — Helix Pharma UK` },
+        { title: `${product.name} — Medi Pharma UK` },
         { name: "description", content: description },
-        { property: "og:title", content: `${product.name} — Helix Pharma UK` },
+        { property: "og:title", content: `${product.name} — Medi Pharma UK` },
         { property: "og:description", content: description },
       ],
     };

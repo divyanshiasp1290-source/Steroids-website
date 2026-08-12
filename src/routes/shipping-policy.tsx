@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PolicyPage } from "@/components/legal/PolicyPage";
 import shippingBanner from "@/assets/about-facility.jpg";
 
-const title = "Shipping Policy — Helix Pharma UK";
+const title = "Shipping Policy — Medi Pharma UK";
 const description = "Dispatch times, insured worldwide delivery, duties and tracking information.";
 
 export const Route = createFileRoute("/shipping-policy")({

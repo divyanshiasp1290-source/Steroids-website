@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PolicyPage } from "@/components/legal/PolicyPage";
 import privacyBanner from "@/assets/account-hero.svg";
 
-const title = "Privacy Policy — Helix Pharma UK";
-const description = "How Helix Pharma UK collects, uses, stores and protects your personal data.";
+const title = "Privacy Policy — Medi Pharma UK";
+const description = "How Medi Pharma UK collects, uses, stores and protects your personal data.";
 
 export const Route = createFileRoute("/privacy-policy")({
   head: () => ({
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/privacy-policy")({
         {
           heading: "Payments",
           body: [
-            "Card details are handled entirely by our payment processor. Helix Pharma UK never stores full card numbers on its own systems.",
+            "Card details are handled entirely by our payment processor. Medi Pharma UK never stores full card numbers on its own systems.",
           ],
         },
         {

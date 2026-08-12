@@ -10,7 +10,7 @@ import { ProductGridSkeleton } from "@/components/ui-kit/Skeletons";
 import { productsByIdsQuery } from "@/lib/queries";
 import { useStore } from "@/lib/store";
 
-const title = "Wishlist — Helix Pharma UK";
+const title = "Wishlist — Medi Pharma UK";
 const description = "The pieces you've saved for later, kept in one place.";
 
 export const Route = createFileRoute("/wishlist")({

@@ -6,7 +6,7 @@ import aboutFacility from "@/assets/about-facility.jpg";
 import { NewsletterSection } from "@/components/marketing/NewsletterSection";
 import { pageQuery } from "@/lib/queries";
 
-const title = "About Helix Pharma UK — Lab-Verified Medicine Supply";
+const title = "About Medi Pharma UK — Lab-Verified Medicine Supply";
 const description =
   "How we source, test and dispatch pharmacy-grade medication from our Manchester facility.";
 
@@ -102,7 +102,7 @@ function About() {
           </h1>
           <p className="animate-fade-up mt-4 max-w-2xl text-pretty leading-relaxed text-on-media/75">
             {page?.subtitle ??
-              "Helix Pharma UK was founded by pharmacists tired of unverifiable products and vague sourcing claims. We keep the catalogue small so every batch can be tracked end to end."}
+              "Medi Pharma UK was founded by pharmacists tired of unverifiable products and vague sourcing claims. We keep the catalogue small so every batch can be tracked end to end."}
           </p>
           <div className="animate-fade-up mt-7 flex flex-wrap gap-3">
             <Link
@@ -139,7 +139,7 @@ function About() {
         <div className="min-w-0">
           <img
             src={aboutFacility}
-            alt="Discreet parcels being sealed at the Helix Pharma UK fulfilment unit"
+            alt="Discreet parcels being sealed at the Medi Pharma UK fulfilment unit"
             width={1008}
             height={1200}
             loading="lazy"

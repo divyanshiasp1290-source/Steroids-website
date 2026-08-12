@@ -84,7 +84,7 @@ export function Footer() {
       <div className="container-page grid gap-14 py-16 lg:grid-cols-[1.4fr_2fr] lg:py-20">
         <div className="max-w-sm">
           <Link to="/" className="font-display text-2xl font-semibold tracking-tight">
-            Helix<span className="text-accent">Pharma</span>
+            Medi<span className="text-accent">Pharma</span>
           </Link>
           <p className="mt-5 text-sm leading-relaxed text-muted-foreground">
             A UK supplier of pharmacy-grade medication and performance support. Every batch is
@@ -117,7 +117,7 @@ export function Footer() {
       <div className="border-t border-border">
         <div className="container-page flex flex-col items-center justify-between gap-3 py-6 sm:flex-row">
           <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
-            © {new Date().getFullYear()} Helix Pharma UK. All rights reserved.
+            © {new Date().getFullYear()} Medi Pharma UK. All rights reserved.
           </p>
           <p className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
             Ships from the UK · GBP · Not medical advice

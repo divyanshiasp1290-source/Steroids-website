@@ -9,7 +9,7 @@ import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { NewsletterSection } from "@/components/marketing/NewsletterSection";
 import { ProductRail } from "@/components/products/ProductRail";
 
-const title = "Helix Pharma UK — Pharmacy-Grade Medicines Delivered";
+const title = "Medi Pharma UK — Pharmacy-Grade Medicines Delivered";
 const description =
   "Lab-tested, pharmacy-grade medication, performance support and wellness treatments. Discreet UK next-day delivery and verified batch testing on every order.";
 

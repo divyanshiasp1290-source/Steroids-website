@@ -5,8 +5,8 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { signInCustomer, useAuth } from "@/lib/auth";
 
-const title = "Customer login — Helix Pharma UK";
-const description = "Sign in to your Helix Pharma UK account to access your order history and saved details.";
+const title = "Customer login — Medi Pharma UK";
+const description = "Sign in to your Medi Pharma UK account to access your order history and saved details.";
 
 export const Route = createFileRoute("/login")({
   head: () => ({

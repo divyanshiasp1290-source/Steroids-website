@@ -15,8 +15,8 @@ import { toast } from "sonner";
 import { useMemo, useState } from "react";
 import type { OrderStatus } from "@/lib/types";
 
-const title = "My Account — Helix Pharma UK";
-const description = "Track orders, review your details and manage your Helix Pharma UK profile.";
+const title = "My Account — Medi Pharma UK";
+const description = "Track orders, review your details and manage your Medi Pharma UK profile.";
 
 export const Route = createFileRoute("/account")({
   head: () => ({

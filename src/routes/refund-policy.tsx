@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PolicyPage } from "@/components/legal/PolicyPage";
 import refundBanner from "@/assets/about-lab.jpg";
 
-const title = "Refund Policy — Helix Pharma UK";
-const description = "Returns, exchanges, refund timelines and the Helix Pharma UK two-year guarantee.";
+const title = "Refund Policy — Medi Pharma UK";
+const description = "Returns, exchanges, refund timelines and the Medi Pharma UK two-year guarantee.";
 
 export const Route = createFileRoute("/refund-policy")({
   head: () => ({

@@ -29,7 +29,7 @@ export function WhyChooseUs() {
   return (
     <section className="container-page section-y">
       <SectionHeader
-        eyebrow="Why Helix Pharma UK"
+        eyebrow="Why Medi Pharma UK"
         title="Clinical standards, from order to doorstep"
         align="center"
       />
