@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { BadgeCheck, Heart, Minus, Plus, RotateCcw, ShieldCheck, Truck } from "lucide-react";
+import { BadgeCheck, ChevronLeft, ChevronRight, Heart, Minus, Plus, RotateCcw, ShieldCheck, Truck } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -12,7 +12,7 @@ import { Rating } from "@/components/ui-kit/Rating";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { fetchProduct } from "@/lib/api";
-import { formatPrice, stockLabel } from "@/lib/format";
+import { decodeHtml, formatPrice, stockLabel } from "@/lib/format";
 import { productReviewsQuery, relatedProductsQuery } from "@/lib/queries";
 import { useStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -66,7 +66,8 @@ function ProductDetail() {
     setQuantity(1);
   }, [product.id, trackViewed]);
 
-  const images: (string | null)[] = product.images?.length ? product.images : [null];
+  const images: string[] = (product.images || []).filter(Boolean);
+  const displayName = decodeHtml(product.name);
   const stock = stockLabel(product.stock);
   const soldOut = product.stock <= 0;
   const wishlisted = isWishlisted(product.id);
@@ -94,33 +95,62 @@ function ProductDetail() {
       </div>
 
       <div className="container-page grid gap-12 pb-16 lg:grid-cols-2 lg:gap-16">
-        <div className={cn("grid gap-4", images.length > 1 && "sm:grid-cols-[5rem_minmax(0,1fr)]")}>
+        <div className={cn("grid gap-4", images.length > 1 && "sm:grid-cols-[5.5rem_minmax(0,1fr)]")}>
           {images.length > 1 ? (
-            <div className="order-2 flex gap-3 sm:order-1 sm:flex-col">
+            <div className="order-2 flex gap-3 overflow-x-auto pb-2 sm:order-1 sm:flex-col sm:overflow-visible sm:pb-0">
               {images.map((image, index) => (
                 <button
                   key={index}
                   type="button"
                   onClick={() => setActiveImage(index)}
                   className={cn(
-                    "w-20 shrink-0 border transition-colors",
-                    index === activeImage ? "border-accent" : "border-border hover:border-foreground/40",
+                    "w-20 shrink-0 border-2 transition-all",
+                    index === activeImage
+                      ? "border-accent shadow-sm"
+                      : "border-transparent opacity-70 hover:border-foreground/30 hover:opacity-100",
                   )}
                   aria-label={`View image ${index + 1}`}
                 >
-                  <MediaFrame src={image} alt="" />
+                  <MediaFrame src={image} alt="" ratio="aspect-[4/5]" />
                 </button>
               ))}
             </div>
           ) : null}
-          <div className="order-1 sm:order-2">
+          <div className="relative order-1 sm:order-2">
             <MediaFrame
               src={images[activeImage] ?? null}
-              alt={product.name}
+              alt={displayName}
               loading="eager"
               className="group"
               imgClassName="transition-transform duration-700 hover:scale-[1.6] cursor-zoom-in"
             />
+            {images.length > 1 ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveImage((prev) => (prev > 0 ? prev - 1 : images.length - 1))
+                  }
+                  className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-card/90 p-2 text-foreground shadow-soft backdrop-blur transition-all duration-200 hover:bg-card hover:scale-110 focus:outline-none"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setActiveImage((prev) => (prev < images.length - 1 ? prev + 1 : 0))
+                  }
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-card/90 p-2 text-foreground shadow-soft backdrop-blur transition-all duration-200 hover:bg-card hover:scale-110 focus:outline-none"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+                <div className="absolute bottom-3 right-3 rounded-full bg-black/65 px-2.5 py-1 text-xs font-medium tracking-wide text-white backdrop-blur">
+                  {activeImage + 1} / {images.length}
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
 
@@ -134,7 +164,7 @@ function ProductDetail() {
               {product.category.name}
             </Link>
           ) : null}
-          <h1 className="display-lg mt-4 text-balance">{product.name}</h1>
+          <h1 className="display-lg mt-4 text-balance">{displayName}</h1>
 
           <div className="mt-5 flex flex-wrap items-center gap-4">
             <Rating value={reviewAverage} count={reviewCount} />

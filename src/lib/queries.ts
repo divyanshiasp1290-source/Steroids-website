@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
 
 import {
   fetchBrand,
@@ -27,6 +27,15 @@ export const brandQuery = (slug: string) =>
 
 export const productsQuery = (filters: ProductFilters) =>
   queryOptions({ queryKey: ["products", filters], queryFn: () => fetchProducts(filters) });
+
+export const productsInfiniteQuery = (filters: Omit<ProductFilters, "page">) =>
+  infiniteQueryOptions({
+    queryKey: ["products-infinite", filters],
+    queryFn: ({ pageParam }) => fetchProducts({ ...filters, page: Number(pageParam) }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages) =>
+      lastPage.items.length === (filters.perPage ?? 12) ? allPages.length + 1 : undefined,
+  });
 
 export const collectionQuery = (
   collection: "trending" | "best_sellers" | "new_arrivals",

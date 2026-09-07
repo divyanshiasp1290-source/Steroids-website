@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { CustomerReviews } from "@/components/home/CustomerReviews";
-import { FeaturedCategories } from "@/components/home/FeaturedCategories";
 import { Hero } from "@/components/home/Hero";
 import { useQuery } from "@tanstack/react-query";
 import { bannersQuery } from "@/lib/queries";
@@ -50,9 +49,6 @@ function Home() {
         </div>
       ) : null}
 
-      <div id="collection" className="scroll-mt-24">
-        <FeaturedCategories />
-      </div>
       <ProductRail
         collection="trending"
         eyebrow="Most ordered"

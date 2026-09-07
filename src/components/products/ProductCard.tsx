@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { MediaFrame } from "@/components/ui-kit/MediaFrame";
 import { Rating } from "@/components/ui-kit/Rating";
-import { formatPrice, stockLabel } from "@/lib/format";
+import { decodeHtml, formatPrice, stockLabel } from "@/lib/format";
 import { productReviewStatsQuery } from "@/lib/queries";
 import { useStore } from "@/lib/store";
 import type { Product } from "@/lib/types";
@@ -27,17 +27,41 @@ export function ProductCard({
   const rating = stats ? stats.average : (product.rating ?? 0);
   const reviewCount = stats ? stats.count : (product.review_count ?? 0);
 
+  const primaryImage = product.images?.[0];
+  const secondaryImage = product.images?.[1];
+  const displayName = decodeHtml(product.name);
+
   return (
     <article className="group flex h-full flex-col">
       <div className="relative">
         <Link
           to="/product/$slug"
           params={{ slug: product.slug }}
-          aria-label={product.name}
-          className="block"
+          aria-label={displayName}
+          className="relative block overflow-hidden"
         >
-          <MediaFrame src={product.images?.[0]} alt={product.name} hoverZoom />
+          <MediaFrame
+            src={primaryImage}
+            alt={displayName}
+            hoverZoom={!secondaryImage}
+            className={cn(
+              secondaryImage && "transition-opacity duration-500 ease-in-out group-hover:opacity-0",
+            )}
+          />
+          {secondaryImage ? (
+            <MediaFrame
+              src={secondaryImage}
+              alt={`${displayName} alternate view`}
+              className="absolute inset-0 opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100"
+            />
+          ) : null}
         </Link>
+
+        {product.images && product.images.length > 1 ? (
+          <span className="pointer-events-none absolute bottom-3 right-3 z-10 rounded-full bg-black/60 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-white backdrop-blur transition-opacity duration-300 group-hover:opacity-0">
+            {product.images.length} photos
+          </span>
+        ) : null}
 
         <div className="pointer-events-none absolute left-3 top-3 flex flex-col gap-1.5">
           {product.is_new_arrival ? <Tag>New</Tag> : null}
@@ -86,7 +110,7 @@ export function ProductCard({
         <p className="label-caps">{product.category?.name ?? "Pharmacy"}</p>
         <h3 className="mt-1.5 font-display text-lg leading-snug">
           <Link to="/product/$slug" params={{ slug: product.slug }} className="link-underline">
-            {product.name}
+            {displayName}
           </Link>
         </h3>
         <div className="mt-2">

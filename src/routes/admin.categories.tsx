@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { AdminSection } from "@/components/admin/AdminSection";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { FormField } from "@/components/admin/FormField";
-import { ImagePickerField } from "@/components/admin/ImagePicker";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -24,11 +23,10 @@ type FormState = {
   name: string;
   slug: string;
   description: string;
-  image_url: string | null;
   sort_order: string;
 };
 
-const EMPTY: FormState = { id: null, name: "", slug: "", description: "", image_url: null, sort_order: "0" };
+const EMPTY: FormState = { id: null, name: "", slug: "", description: "", sort_order: "0" };
 
 function slugify(v: string) {
   return v.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -64,7 +62,6 @@ function AdminCategories() {
         name: form.name,
         slug: form.slug || slugify(form.name),
         description: form.description || null,
-        image_url: form.image_url,
         sort_order: Number(form.sort_order) || 0,
       };
       if (form.id) payload["id"] = form.id;
@@ -98,7 +95,7 @@ function AdminCategories() {
       key: "actions", header: "", className: "text-right",
       render: (c) => (
         <div className="flex justify-end gap-1.5">
-          <Button variant="ghost" size="icon" onClick={() => { setForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", image_url: c.image_url, sort_order: String(c.sort_order ?? 0) }); setOpen(true); }}>
+          <Button variant="ghost" size="icon" onClick={() => { setForm({ id: c.id, name: c.name, slug: c.slug, description: c.description ?? "", sort_order: String(c.sort_order ?? 0) }); setOpen(true); }}>
             <Pencil className="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="icon" onClick={() => { if (confirm(`Delete "${c.name}"?`)) remove.mutate(c.id); }}>
@@ -134,7 +131,6 @@ function AdminCategories() {
             <FormField label="Sort order">
               <Input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} />
             </FormField>
-            <ImagePickerField label="Image" value={form.image_url} onChange={(url) => setForm({ ...form, image_url: url })} />
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
               <Button type="submit" disabled={save.isPending}>{save.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}</Button>

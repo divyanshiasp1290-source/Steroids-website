@@ -1,6 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { SlidersHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight, SlidersHorizontal } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { PageHeader } from "@/components/layout/PageHeader";
@@ -14,7 +14,7 @@ import {
 } from "@/components/shop/FilterSidebar";
 import { EmptyState } from "@/components/ui-kit/EmptyState";
 import { ProductGridSkeleton } from "@/components/ui-kit/Skeletons";
-import { productsQuery } from "@/lib/queries";
+import { productsInfiniteQuery } from "@/lib/queries";
 import type { Product, ProductFilters, ProductSort } from "@/lib/types";
 
 const title = "Shop All Medicines — Medi Pharma UK";
@@ -50,7 +50,16 @@ const SORT_OPTIONS: { value: ProductSort; label: string }[] = [
   { value: "name", label: "Alphabetical" },
 ];
 
-const PER_PAGE = 12;
+const PER_PAGE = 140;
+
+function getPageNumbers(totalPages: number, currentPage: number): (number | "ellipsis")[] {
+  if (totalPages <= 7) return Array.from({ length: totalPages }, (_, index) => index + 1);
+  if (currentPage <= 4) return [1, 2, 3, 4, "ellipsis", totalPages - 2, totalPages - 1, totalPages];
+  if (currentPage >= totalPages - 3) {
+    return [1, 2, 3, "ellipsis", totalPages - 3, totalPages - 2, totalPages - 1, totalPages];
+  }
+  return [1, 2, "ellipsis", currentPage - 1, currentPage, currentPage + 1, "ellipsis", totalPages];
+}
 
 function ShopPage() {
   const search = Route.useSearch();
@@ -59,17 +68,17 @@ function ShopPage() {
     q: search.q ?? "",
     categories: search.category ? [search.category] : [],
   });
-  const [page, setPage] = useState(1);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [quickView, setQuickView] = useState<Product | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
+    setCurrentPage(1);
     setFilters((current) => ({
       ...current,
       q: search.q ?? "",
       categories: search.category ? [search.category] : current.categories,
     }));
-    setPage(1);
   }, [search.q, search.category]);
 
   const apiFilters = useMemo<ProductFilters>(
@@ -81,18 +90,33 @@ function ShopPage() {
       inStockOnly: filters.inStockOnly || undefined,
       minRating: filters.minRating || undefined,
       sort: filters.sort,
-      page,
       perPage: PER_PAGE,
     }),
-    [filters, page],
+    [filters],
   );
 
-  const { data, isLoading, isFetching } = useQuery(productsQuery(apiFilters));
-  const totalPages = data ? Math.max(1, Math.ceil(data.total / PER_PAGE)) : 1;
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } =
+    useInfiniteQuery(productsInfiniteQuery(apiFilters));
+  const products = data?.pages[currentPage - 1]?.items ?? [];
+  const totalProducts = data?.pages[0]?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(totalProducts / PER_PAGE));
+  const pageNumbers = getPageNumbers(totalPages, currentPage);
 
   const updateFilters = (next: ShopFilterState) => {
+    setCurrentPage(1);
     setFilters(next);
-    setPage(1);
+  };
+
+  const goToPage = async (page: number) => {
+    if (page === currentPage || page < 1 || page > totalPages) return;
+
+    let loadedPages = data?.pages.length ?? 0;
+    while (loadedPages < page && hasNextPage) {
+      const result = await fetchNextPage();
+      loadedPages = result.data?.pages.length ?? loadedPages;
+      if (!result.hasNextPage && loadedPages < page) return;
+    }
+    setCurrentPage(page);
   };
 
   return (
@@ -107,7 +131,7 @@ function ShopPage() {
 
       <div className="container-page grid gap-12 py-12 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-14 lg:py-16">
         <aside className="hidden lg:block">
-          <div className="sticky top-32">
+          <div className="sticky top-32 h-[calc(100vh-8rem)] overflow-hidden">
             <FilterSidebar value={filters} onChange={updateFilters} />
           </div>
         </aside>
@@ -115,7 +139,7 @@ function ShopPage() {
         <div className="min-w-0">
           <div className="mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 border-b border-border pb-4">
             <p className="min-w-0 truncate text-xs text-muted-foreground">
-              {isLoading ? "Loading products…" : `${data?.total ?? 0} products`}
+              {isLoading ? "Loading products..." : `${totalProducts} products`}
             </p>
             <div className="flex shrink-0 items-center gap-3">
               <button
@@ -143,33 +167,63 @@ function ShopPage() {
             </div>
           </div>
 
-          {isLoading || isFetching ? (
+          {isLoading ? (
             <ProductGridSkeleton count={10} />
-          ) : data && data.items.length > 0 ? (
+          ) : products.length > 0 ? (
             <>
               <div className="grid grid-cols-2 gap-x-5 gap-y-12 sm:grid-cols-3 lg:grid-cols-4 lg:gap-x-7 xl:grid-cols-5">
-                {data.items.map((product) => (
+                {products.map((product) => (
                   <ProductCard key={product.id} product={product} onQuickView={setQuickView} />
                 ))}
               </div>
 
               {totalPages > 1 ? (
-                <div className="mt-16 flex items-center justify-center gap-2">
-                  {Array.from({ length: totalPages }).map((_, index) => (
+                <nav className="mt-16 flex justify-center" aria-label="Product pages">
+                  <div className="flex items-center gap-1">
                     <button
-                      key={index}
                       type="button"
-                      onClick={() => setPage(index + 1)}
-                      className={
-                        page === index + 1
-                          ? "h-9 w-9 bg-primary text-xs text-primary-foreground"
-                          : "h-9 w-9 border border-border text-xs transition-colors hover:bg-secondary"
-                      }
+                      aria-label="Previous page"
+                      disabled={currentPage === 1 || isFetchingNextPage}
+                      onClick={() => goToPage(currentPage - 1)}
+                      className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
                     >
-                      {index + 1}
+                      <ChevronLeft className="h-4 w-4" />
                     </button>
-                  ))}
-                </div>
+
+                    {pageNumbers.map((page, index) =>
+                      page === "ellipsis" ? (
+                        <span key={`ellipsis-${index}`} className="flex h-9 w-9 items-center justify-center text-sm text-muted-foreground">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={page}
+                          type="button"
+                          aria-current={page === currentPage ? "page" : undefined}
+                          disabled={isFetchingNextPage}
+                          onClick={() => goToPage(page)}
+                          className={`h-9 min-w-9 rounded-full border px-2 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                            page === currentPage
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-border hover:bg-secondary"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      ),
+                    )}
+
+                    <button
+                      type="button"
+                      aria-label="Next page"
+                      disabled={currentPage === totalPages || isFetchingNextPage}
+                      onClick={() => goToPage(currentPage + 1)}
+                      className="flex h-9 w-9 items-center justify-center rounded-full border border-border transition-colors hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </nav>
               ) : null}
             </>
           ) : (

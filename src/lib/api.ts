@@ -122,6 +122,26 @@ export async function fetchProducts(filters: ProductFilters = {}): Promise<Pagin
   return { items: (data ?? []).map(normalizeProduct), total: count ?? 0 };
 }
 
+async function fetchAllProducts(): Promise<Product[]> {
+  const pageSize = 500;
+  const products: Product[] = [];
+
+  for (let from = 0; ; from += pageSize) {
+    const { data, error } = await supabase
+      .from("products")
+      .select(PRODUCT_SELECT)
+      .order("created_at", { ascending: false, nullsFirst: false })
+      .order("id", { ascending: false })
+      .range(from, from + pageSize - 1);
+    if (error) throw error;
+
+    products.push(...(data ?? []).map(normalizeProduct));
+    if (!data || data.length < pageSize) break;
+  }
+
+  return products;
+}
+
 type Collection = "trending" | "best_sellers" | "new_arrivals";
 
 export async function fetchCollection(collection: Collection, limit = 8): Promise<Product[]> {
@@ -810,15 +830,14 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
       .from("orders")
       .select("id,order_number,status,total,customer_name,customer_email,created_at,user_id")
       .order("created_at", { ascending: false }),
-    supabase.from("products").select(PRODUCT_SELECT),
+    fetchAllProducts(),
     supabase.from("profiles").select("*").order("created_at", { ascending: false }),
   ]);
   if (ordersRes.error) throw ordersRes.error;
-  if (productsRes.error) throw productsRes.error;
   if (customersRes.error) throw customersRes.error;
 
   const orders = (ordersRes.data ?? []) as unknown as Order[];
-  const products = (productsRes.data ?? []).map(normalizeProduct);
+  const products = productsRes;
   const customers = (customersRes.data ?? []) as Profile[];
 
   const paid = orders.filter((o) => o.status !== "cancelled" && o.status !== "refunded");
@@ -868,12 +887,7 @@ export async function fetchDashboardStats(): Promise<DashboardStats> {
 }
 
 export async function fetchAdminProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from("products")
-    .select(PRODUCT_SELECT)
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []).map(normalizeProduct);
+  return fetchAllProducts();
 }
 
 export type { OrderItem };

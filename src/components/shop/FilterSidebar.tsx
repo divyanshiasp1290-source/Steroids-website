@@ -68,25 +68,13 @@ export function FilterSidebar({
           />
         </Group>
 
-        <Group title="Categories">
-          {categories.isLoading ? (
-            <SkeletonList />
-          ) : categories.data && categories.data.length > 0 ? (
-            <ul className="space-y-3">
-              {categories.data.map((category) => (
-                <li key={category.id}>
-                  <CheckRow
-                    checked={value.categories.includes(category.slug)}
-                    onChange={() => toggle("categories", category.slug)}
-                    label={category.name}
-                  />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <Muted>Categories load from your catalogue.</Muted>
-          )}
-        </Group>
+        <button
+          type="button"
+          onClick={() => onChange({ ...defaultFilters })}
+          className="w-full border border-border py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-secondary"
+        >
+          Reset filters
+        </button>
 
         <Group title="Price range">
           <Slider
@@ -136,13 +124,25 @@ export function FilterSidebar({
           </ul>
         </Group>
 
-        <button
-          type="button"
-          onClick={() => onChange({ ...defaultFilters })}
-          className="w-full border border-border py-2.5 text-[11px] font-semibold uppercase tracking-[0.16em] transition-colors hover:bg-secondary"
-        >
-          Reset filters
-        </button>
+        <Group title="Categories">
+          {categories.isLoading ? (
+            <SkeletonList />
+          ) : categories.data && categories.data.length > 0 ? (
+            <ul className="max-h-[45vh] space-y-3 overflow-y-auto pr-2">
+              {categories.data.map((category) => (
+                <li key={category.id}>
+                  <CheckRow
+                    checked={value.categories.includes(category.slug)}
+                    onChange={() => toggle("categories", category.slug)}
+                    label={category.name}
+                  />
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <Muted>Categories load from your catalogue.</Muted>
+          )}
+        </Group>
       </div>
     </div>
   );

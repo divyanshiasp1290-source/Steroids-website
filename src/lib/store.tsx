@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
+import { decodeHtml } from "@/lib/format";
 import type { CartLine, Product } from "./types";
 
 type StoreState = {
@@ -74,7 +75,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         {
           productId: product.id,
           slug: product.slug,
-          name: product.name,
+          name: decodeHtml(product.name),
           brand: product.category?.name ?? null,
           price: product.price,
           image: product.images?.[0] ?? null,
