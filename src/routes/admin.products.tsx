@@ -30,6 +30,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { adminDelete, adminSetFlag, adminUpsert } from "@/lib/api";
+import { formatPrice } from "@/lib/format";
 import { adminCategoriesQuery, adminProductsQuery } from "@/lib/queries";
 import type { Product } from "@/lib/types";
 
@@ -283,7 +284,7 @@ function AdminProducts() {
     {
       key: "price",
       header: "Price",
-      render: (p) => `$${Number(p.price).toFixed(2)}`,
+      render: (p) => formatPrice(p.price, p.currency ?? "GBP"),
     },
     {
       key: "stock",
