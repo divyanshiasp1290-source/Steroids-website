@@ -12,6 +12,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { uploadMedia } from "@/lib/api";
+import { resolveMediaUrl } from "@/lib/format";
 import { mediaQuery } from "@/lib/queries";
 import { cn } from "@/lib/utils";
 
@@ -39,13 +40,22 @@ export function ImagePickerField({
     onError: (e) => toast.error(e instanceof Error ? e.message : "Upload failed."),
   });
 
+  const resolvedValue = resolveMediaUrl(value);
+
   return (
     <div className="space-y-2">
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <div className="flex items-center gap-3">
-        {value ? (
+        {resolvedValue ? (
           <div className="relative h-20 w-20 overflow-hidden rounded-md border border-border">
-            <img src={value} alt="" className="h-full w-full object-cover" />
+            <img
+              src={resolvedValue}
+              alt=""
+              className="h-full w-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
             <button
               type="button"
               onClick={() => onChange(null)}
@@ -134,38 +144,50 @@ export function MultiImagePickerField({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap gap-3">
-        {values.map((url) => (
-          <div
-            key={url}
-            className={cn(
-              "relative h-20 w-20 overflow-hidden rounded-md border-2",
-              featured === url ? "border-primary" : "border-border",
-            )}
-          >
-            <img src={url} alt="" className="h-full w-full object-cover" />
-            <button
-              type="button"
-              onClick={() => onChange(values.filter((v) => v !== url))}
-              className="absolute right-0.5 top-0.5 rounded-full bg-background/90 p-0.5 text-foreground"
+        {values.map((url) => {
+          const resolved = resolveMediaUrl(url);
+          return (
+            <div
+              key={url}
+              className={cn(
+                "relative h-20 w-20 overflow-hidden rounded-md border-2",
+                featured === url ? "border-primary" : "border-border",
+              )}
             >
-              <X className="h-3 w-3" />
-            </button>
-            {onFeaturedChange ? (
+              {resolved ? (
+                <img
+                  src={resolved}
+                  alt=""
+                  className="h-full w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : null}
               <button
                 type="button"
-                onClick={() => onFeaturedChange(url)}
-                className={cn(
-                  "absolute inset-x-0 bottom-0 py-0.5 text-[9px] font-medium uppercase tracking-wide",
-                  featured === url
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-background/80 text-foreground",
-                )}
+                onClick={() => onChange(values.filter((v) => v !== url))}
+                className="absolute right-0.5 top-0.5 rounded-full bg-background/90 p-0.5 text-foreground"
               >
-                {featured === url ? "Featured" : "Set featured"}
+                <X className="h-3 w-3" />
               </button>
-            ) : null}
-          </div>
-        ))}
+              {onFeaturedChange ? (
+                <button
+                  type="button"
+                  onClick={() => onFeaturedChange(url)}
+                  className={cn(
+                    "absolute inset-x-0 bottom-0 py-0.5 text-[9px] font-medium uppercase tracking-wide",
+                    featured === url
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background/80 text-foreground",
+                  )}
+                >
+                  {featured === url ? "Featured" : "Set featured"}
+                </button>
+              ) : null}
+            </div>
+          );
+        })}
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
@@ -249,20 +271,28 @@ function MediaGridPicker({ onSelect }: { onSelect: (url: string) => void }) {
 
   return (
     <div className="grid max-h-[60vh] grid-cols-4 gap-3 overflow-y-auto sm:grid-cols-6">
-      {data.map((asset) => (
-        <button
-          key={asset.id}
-          type="button"
-          onClick={() => onSelect(asset.url)}
-          className="group aspect-square overflow-hidden rounded-md border border-border"
-        >
-          <img
-            src={asset.url}
-            alt={asset.alt ?? asset.file_name}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          />
-        </button>
-      ))}
+      {data.map((asset) => {
+        const resolved = resolveMediaUrl(asset.url);
+        return (
+          <button
+            key={asset.id}
+            type="button"
+            onClick={() => onSelect(asset.url)}
+            className="group aspect-square overflow-hidden rounded-md border border-border"
+          >
+            {resolved ? (
+              <img
+                src={resolved}
+                alt={asset.alt ?? asset.file_name}
+                className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            ) : null}
+          </button>
+        );
+      })}
     </div>
   );
 }

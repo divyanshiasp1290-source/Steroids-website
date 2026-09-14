@@ -1,0 +1,41 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { createClient } from '@supabase/supabase-js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, '..');
+
+const envLines = fs.readFileSync(path.join(projectRoot, '.env'), 'utf8').split(/\r?\n/);
+const env = {};
+for (const line of envLines) {
+  const idx = line.indexOf('=');
+  if (idx !== -1 && !line.trim().startsWith('#')) {
+    const key = line.slice(0, idx).trim();
+    let val = line.slice(idx + 1).trim();
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    env[key] = val;
+  }
+}
+
+const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
+
+const files = [
+  'pharmacom-pharmaoxy-50-oxymetholone-10ml-vial-50mgml-487cd7a4.jpg'
+];
+
+async function run() {
+  const outDir = path.join(projectRoot, 'temp_inspect_cross');
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+  for (const f of files) {
+    const { data } = await supabase.storage.from('media').download('products/' + f);
+    if (data) {
+      fs.writeFileSync(path.join(outDir, f), Buffer.from(await data.arrayBuffer()));
+      console.log('Saved', f);
+    }
+  }
+}
+run().catch(console.error);

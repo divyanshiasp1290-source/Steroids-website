@@ -35,5 +35,39 @@ export function decodeHtml(value: string | null | undefined): string {
     .replace(/&quot;/g, '"')
     .replace(/&#039;/g, "'")
     .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">");
+    .replace(/&gt;/g, ">")
+    .replace(/([a-zA-Z0-9])\+([a-zA-Z0-9])/g, "$1 + $2");
+}
+
+export function resolveMediaUrl(src: string | null | undefined): string | null {
+  if (!src) return null;
+  const trimmed = src.trim();
+  if (!trimmed) return null;
+
+  if (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("data:") ||
+    trimmed.startsWith("blob:")
+  ) {
+    return trimmed;
+  }
+
+  const envMeta = typeof import.meta !== "undefined" ? (import.meta as unknown as { env?: Record<string, string> }).env : undefined;
+  const envProc = typeof process !== "undefined" ? process.env : undefined;
+  const supabaseUrl = envMeta?.["VITE_SUPABASE_URL"] || envProc?.["VITE_SUPABASE_URL"] || envProc?.["SUPABASE_URL"] || "";
+  const cleanBase = supabaseUrl ? supabaseUrl.replace(/\/+$/, "") : "";
+
+  if (trimmed.startsWith("/")) {
+    if (trimmed.startsWith("/storage/v1/")) {
+      return cleanBase ? `${cleanBase}${trimmed}` : trimmed;
+    }
+    return trimmed;
+  }
+
+  const cleanPath = trimmed.replace(/^media\//, "");
+  if (cleanBase) {
+    return `${cleanBase}/storage/v1/object/public/media/${cleanPath}`;
+  }
+  return trimmed;
 }

@@ -1,13 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Pencil, Plus, RotateCcw, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { AdminSection } from "@/components/admin/AdminSection";
 import { DataTable, type Column } from "@/components/admin/DataTable";
 import { FormField } from "@/components/admin/FormField";
 import { MultiImagePickerField } from "@/components/admin/ImagePicker";
+import { MediaFrame } from "@/components/ui-kit/MediaFrame";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { adminDelete, adminSetFlag, adminUpsert } from "@/lib/api";
 import { adminCategoriesQuery, adminProductsQuery } from "@/lib/queries";
@@ -35,6 +37,7 @@ export const Route = createFileRoute("/admin/products")({
   component: AdminProducts,
 });
 
+type StockFilter = "all" | "in_stock" | "low_stock" | "out_of_stock";
 type SpecEntry = { key: string; value: string };
 
 type ProductFormState = {
@@ -123,16 +126,58 @@ function AdminProducts() {
   const { data: categories = [] } = useQuery(adminCategoriesQuery());
 
   const [search, setSearch] = useState("");
+  const [stockFilter, setStockFilter] = useState<StockFilter>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [form, setForm] = useState<ProductFormState>(EMPTY_FORM);
 
+  const stockCounts = useMemo(() => {
+    let inStock = 0;
+    let lowStock = 0;
+    let outOfStock = 0;
+
+    for (const p of products) {
+      const stock = p.stock ?? 0;
+      const threshold = p.low_stock_threshold ?? 5;
+      if (stock <= 0) {
+        outOfStock++;
+      } else {
+        inStock++;
+        if (stock <= threshold) {
+          lowStock++;
+        }
+      }
+    }
+
+    return {
+      all: products.length,
+      in_stock: inStock,
+      low_stock: lowStock,
+      out_of_stock: outOfStock,
+    };
+  }, [products]);
+
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return products;
-    return products.filter(
-      (p) => p.name.toLowerCase().includes(term) || (p.sku ?? "").toLowerCase().includes(term),
-    );
-  }, [products, search]);
+    return products.filter((p) => {
+      if (term) {
+        const matchesName = p.name.toLowerCase().includes(term);
+        const matchesSku = (p.sku ?? "").toLowerCase().includes(term);
+        if (!matchesName && !matchesSku) return false;
+      }
+
+      const stock = p.stock ?? 0;
+      const threshold = p.low_stock_threshold ?? 5;
+
+      if (stockFilter === "in_stock" && stock <= 0) return false;
+      if (stockFilter === "low_stock" && (stock <= 0 || stock > threshold)) return false;
+      if (stockFilter === "out_of_stock" && stock > 0) return false;
+
+      if (categoryFilter !== "all" && p.category_id !== categoryFilter) return false;
+
+      return true;
+    });
+  }, [products, search, stockFilter, categoryFilter]);
 
   function invalidateAll() {
     void queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
@@ -217,11 +262,12 @@ function AdminProducts() {
       header: "Product",
       render: (p) => (
         <div className="flex items-center gap-3">
-          {p.images?.[0] ? (
-            <img src={p.images[0]} alt="" className="h-10 w-10 rounded-md object-cover" />
-          ) : (
-            <div className="h-10 w-10 rounded-md bg-muted" />
-          )}
+          <MediaFrame
+            src={p.images?.[0]}
+            alt={p.name}
+            ratio="aspect-square"
+            className="h-10 w-10 shrink-0 rounded-md"
+          />
           <div>
             <p className="font-medium text-foreground">{p.name}</p>
             <p className="text-xs text-muted-foreground">{p.sku ?? p.slug}</p>
@@ -242,9 +288,37 @@ function AdminProducts() {
     {
       key: "stock",
       header: "Stock",
-      render: (p) => (
-        <Badge variant={p.stock === 0 ? "destructive" : "outline"}>{p.stock}</Badge>
-      ),
+      render: (p) => {
+        const stock = p.stock ?? 0;
+        const threshold = p.low_stock_threshold ?? 5;
+        const isOut = stock <= 0;
+        const isLow = !isOut && stock <= threshold;
+
+        return (
+          <div className="flex items-center gap-1.5">
+            <Badge
+              variant={isOut ? "destructive" : "outline"}
+              className={
+                isLow
+                  ? "border-amber-500/40 bg-amber-500/10 font-medium text-amber-600 dark:text-amber-400"
+                  : ""
+              }
+            >
+              {stock}
+            </Badge>
+            {isLow && (
+              <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+                Low
+              </span>
+            )}
+            {isOut && (
+              <span className="text-[11px] font-medium text-destructive">
+                Out
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
       key: "published",
@@ -320,19 +394,112 @@ function AdminProducts() {
           </Button>
         }
       >
-        <Input
-          placeholder="Search by name or SKU…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        {isLoading ? (
-          <div className="flex h-32 items-center justify-center">
-            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        <div className="space-y-4">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Tabs
+              value={stockFilter}
+              onValueChange={(v) => setStockFilter(v as StockFilter)}
+              className="w-full sm:w-auto"
+            >
+              <TabsList className="grid h-auto w-full grid-cols-2 gap-1 p-1 sm:inline-flex sm:w-auto">
+                <TabsTrigger value="all" className="gap-1.5 px-3 py-1.5 text-xs">
+                  All
+                  <Badge variant="secondary" className="px-1.5 py-0 text-[10px] font-normal">
+                    {stockCounts.all}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="in_stock" className="gap-1.5 px-3 py-1.5 text-xs">
+                  In stock
+                  <Badge variant="secondary" className="px-1.5 py-0 text-[10px] font-normal">
+                    {stockCounts.in_stock}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="low_stock" className="gap-1.5 px-3 py-1.5 text-xs">
+                  Low stock
+                  <Badge
+                    variant="secondary"
+                    className="bg-amber-500/15 px-1.5 py-0 text-[10px] font-medium text-amber-600 dark:text-amber-400"
+                  >
+                    {stockCounts.low_stock}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="out_of_stock" className="gap-1.5 px-3 py-1.5 text-xs">
+                  Out of stock
+                  <Badge
+                    variant="secondary"
+                    className="bg-destructive/15 px-1.5 py-0 text-[10px] font-medium text-destructive"
+                  >
+                    {stockCounts.out_of_stock}
+                  </Badge>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
+
+            <span className="text-xs text-muted-foreground">
+              Showing {filtered.length} of {products.length} product{products.length === 1 ? "" : "s"}
+            </span>
           </div>
-        ) : (
-          <DataTable columns={columns} rows={filtered} getRowId={(p) => p.id} />
-        )}
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative min-w-[220px] flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search by name or SKU…"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="All categories" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All categories</SelectItem>
+                {categories.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {(search || stockFilter !== "all" || categoryFilter !== "all") && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setSearch("");
+                  setStockFilter("all");
+                  setCategoryFilter("all");
+                }}
+                className="h-9 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+                Reset filters
+              </Button>
+            )}
+          </div>
+
+          {isLoading ? (
+            <div className="flex h-32 items-center justify-center">
+              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              rows={filtered}
+              getRowId={(p) => p.id}
+              emptyLabel={
+                stockFilter !== "all" || categoryFilter !== "all" || search
+                  ? "No products match the selected filters."
+                  : "No products found."
+              }
+            />
+          )}
+        </div>
       </AdminSection>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>

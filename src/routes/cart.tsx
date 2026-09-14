@@ -6,6 +6,7 @@ import cartBanner from "@/assets/hero.jpg";
 import { useQuery } from "@tanstack/react-query";
 import { bannersQuery } from "@/lib/queries";
 import { EmptyState } from "@/components/ui-kit/EmptyState";
+import { MediaFrame } from "@/components/ui-kit/MediaFrame";
 import { formatPrice } from "@/lib/format";
 import { useStore } from "@/lib/store";
 
@@ -66,10 +67,11 @@ function CartPage() {
                   className="grid grid-cols-[5rem_minmax(0,1fr)] items-start gap-5 py-6 sm:grid-cols-[7rem_minmax(0,1fr)_auto]"
                 >
                   <Link to="/product/$slug" params={{ slug: line.slug }} className="block">
-                    <img
-                      src={line.image ?? ""}
+                    <MediaFrame
+                      src={line.image}
                       alt={line.name}
-                      className="aspect-[4/5] w-full bg-surface object-cover"
+                      ratio="aspect-[4/5]"
+                      className="w-full bg-surface"
                     />
                   </Link>
 

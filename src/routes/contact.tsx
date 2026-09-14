@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { Clock, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -28,7 +28,6 @@ export const Route = createFileRoute("/contact")({
 
 const FALLBACK = {
   email: "care@Medipharma.co.uk",
-  phone: "+44 161 555 0142",
   address: "Gospodarcza 26, 20-213 Lublin, Polska",
   hours: "10Am - 6PM", 
 };
@@ -42,7 +41,7 @@ function Contact() {
 
   const details = [
     { icon: Mail, label: "Client care", value: contact.email },
-    { icon: Phone, label: "Telephone", value: contact.phone },
+    { icon: Clock, label: "Working hours", value: contact.hours },
     { icon: MapPin, label: "Dispatch hub", value: contact.address },
   ];
 

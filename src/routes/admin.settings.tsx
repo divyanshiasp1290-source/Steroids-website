@@ -23,9 +23,22 @@ const GROUPS: Group[] = [
     description: "Used on the contact page and in the footer",
     fields: [
       { name: "email", label: "Support email" },
-      { name: "phone", label: "Phone" },
       { name: "address", label: "Address", multiline: true },
       { name: "hours", label: "Opening hours" },
+    ],
+  },
+  {
+    key: "crypto_wallets",
+    title: "Crypto Wallet Addresses & Checkout Settings",
+    description: "Manage cryptocurrency deposit addresses and payment instructions shown at checkout",
+    fields: [
+      { name: "usdt_trc20", label: "USDT (TRC-20) Tron Wallet Address" },
+      { name: "btc", label: "Bitcoin (BTC) Wallet Address" },
+      { name: "eth", label: "Ethereum (ETH) Wallet Address" },
+      { name: "usdt_erc20", label: "USDT (ERC-20) Ethereum Wallet Address" },
+      { name: "sol", label: "Solana (SOL) Wallet Address" },
+      { name: "ltc", label: "Litecoin (LTC) Wallet Address" },
+      { name: "instructions", label: "Custom Payment Instructions / Merchant Notice", multiline: true },
     ],
   },
   {

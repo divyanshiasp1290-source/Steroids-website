@@ -604,7 +604,8 @@ type TableName =
   | "pages"
   | "coupons"
   | "media"
-  | "reviews";
+  | "reviews"
+  | "orders";
 
 export async function adminUpsert<T extends Record<string, unknown>>(
   table: TableName,
@@ -703,6 +704,21 @@ export async function fetchAdminOrders(status?: OrderStatus | "all"): Promise<Or
 
 export async function updateOrderStatus(id: string, status: OrderStatus) {
   const { error } = await supabase.from("orders").update({ status }).eq("id", id);
+  if (error) throw error;
+}
+
+export async function updateOrderPaymentProof(id: string, notes: string, paymentStatus?: string) {
+  const patch: Record<string, unknown> = { notes };
+  if (paymentStatus) patch.payment_status = paymentStatus;
+  const { error } = await supabase.from("orders").update(patch).eq("id", id);
+  if (error) throw error;
+}
+
+export async function deleteOrder(id: string) {
+  const { error: itemsError } = await supabase.from("order_items").delete().eq("order_id", id);
+  if (itemsError) throw itemsError;
+
+  const { error } = await supabase.from("orders").delete().eq("id", id);
   if (error) throw error;
 }
 

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Clock, PhoneCall, ShieldCheck } from "lucide-react";
+import { Clock, Headphones, ShieldCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import { NewsletterForm } from "@/components/marketing/NewsletterForm";
@@ -36,7 +36,7 @@ links: [
 const ASSURANCES = [
   { icon: ShieldCheck, label: "Third-party lab tested" },
   { icon: Clock, label: "Same-day UK dispatch" },
-  { icon: PhoneCall, label: "Support 7 days a week" },
+  { icon: Headphones, label: "Support 7 days a week" },
 ];
 
 export function Footer() {

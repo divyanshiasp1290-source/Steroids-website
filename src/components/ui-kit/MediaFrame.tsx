@@ -1,5 +1,7 @@
+import { useEffect, useState } from "react";
 import { ImageOff } from "lucide-react";
 
+import { resolveMediaUrl } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /**
@@ -23,13 +25,23 @@ export function MediaFrame({
   hoverZoom?: boolean;
   loading?: "lazy" | "eager";
 }) {
+  const resolvedSrc = resolveMediaUrl(src);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [resolvedSrc]);
+
+  const showFallback = !resolvedSrc || hasError;
+
   return (
     <div className={cn("relative overflow-hidden bg-surface", ratio, className)}>
-      {src ? (
+      {!showFallback ? (
         <img
-          src={src}
+          src={resolvedSrc}
           alt={alt}
           loading={loading}
+          onError={() => setHasError(true)}
           className={cn(
             "h-full w-full object-cover",
             hoverZoom &&

@@ -27,7 +27,7 @@ export const Route = createFileRoute("/privacy-policy")({
         {
           heading: "Information we collect",
           body: [
-            "We collect the details you give us when creating an account, placing an order or subscribing to the dispatch: name, email address, delivery address, phone number and order history.",
+            "We collect the details you give us when creating an account, placing an order or subscribing to the dispatch: name, email address, delivery address and order history.",
             "We also collect limited technical data — device type, browser and pages visited — to keep the storefront fast and secure.",
           ],
         },

@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { adminDelete, adminSetFlag, adminUpsert } from "@/lib/api";
+import { resolveMediaUrl } from "@/lib/format";
 import { adminCategoriesQuery } from "@/lib/queries";
 import type { Category } from "@/lib/types";
 
@@ -74,15 +75,29 @@ function AdminCategories() {
   const columns: Column<Category>[] = [
     {
       key: "name", header: "Category",
-      render: (c) => (
-        <div className="flex items-center gap-3">
-          {c.image_url ? <img src={c.image_url} alt="" className="h-10 w-10 rounded-md object-cover" /> : <div className="h-10 w-10 rounded-md bg-muted" />}
-          <div>
-            <p className="font-medium text-foreground">{c.name}</p>
-            <p className="text-xs text-muted-foreground">{c.slug}</p>
+      render: (c) => {
+        const resolved = resolveMediaUrl(c.image_url);
+        return (
+          <div className="flex items-center gap-3">
+            {resolved ? (
+              <img
+                src={resolved}
+                alt=""
+                className="h-10 w-10 rounded-md object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = "none";
+                }}
+              />
+            ) : (
+              <div className="h-10 w-10 rounded-md bg-muted" />
+            )}
+            <div>
+              <p className="font-medium text-foreground">{c.name}</p>
+              <p className="text-xs text-muted-foreground">{c.slug}</p>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     { key: "sort", header: "Sort order", render: (c) => c.sort_order ?? 0 },
     {

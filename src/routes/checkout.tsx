@@ -1,18 +1,18 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { Check } from "lucide-react";
+import { Check, Copy, CreditCard, ExternalLink, QrCode, ShieldCheck, Wallet } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/layout/PageHeader";
-import { createOrder, validateCoupon } from "@/lib/api";
+import { CryptoPaymentCard } from "@/components/checkout/CryptoPaymentCard";
+import { createOrder, updateOrderPaymentProof, validateCoupon } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
+import { getCryptoCoin, getQrCodeUrl, getWalletAddress } from "@/lib/crypto";
 import { formatPrice } from "@/lib/format";
+import { activeCouponsQuery, settingsQuery } from "@/lib/queries";
 import { useStore } from "@/lib/store";
 import type { Coupon, Order } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
-import { activeCouponsQuery } from "@/lib/queries";
-import { fetchCoupons } from "@/lib/api";
 
 const title = "Secure Checkout — Medi Pharma UK";
 const description = "Complete your order with insured worldwide delivery and a two-year guarantee.";
@@ -42,10 +42,19 @@ function Checkout() {
   const [placed, setPlaced] = useState<Order | null>(null);
   const [coupon, setCoupon] = useState<Coupon | null>(null);
   const [code, setCode] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"crypto" | "invoice">("crypto");
+  const [selectedCrypto, setSelectedCrypto] = useState("usdt_trc20");
+  const [cryptoTxid, setCryptoTxid] = useState("");
+  const [postOrderTxid, setPostOrderTxid] = useState("");
+  const [submittedTxid, setSubmittedTxid] = useState("");
+  const [isSubmittingTxid, setIsSubmittingTxid] = useState(false);
+  const [copiedAddress, setCopiedAddress] = useState(false);
+
+  const { data: settings } = useQuery(settingsQuery());
+
   const [form, setForm] = useState({
     name: "",
     email: "",
-    phone: "",
     line1: "",
     city: "",
     postcode: "",
@@ -73,11 +82,28 @@ function Checkout() {
   });
 
   const orderMutation = useMutation({
-    mutationFn: () =>
-      createOrder({
+    mutationFn: () => {
+      let notes = form.notes ? form.notes.trim() : "";
+      let methodString: string = paymentMethod;
+
+      if (paymentMethod === "crypto") {
+        const coin = getCryptoCoin(selectedCrypto);
+        const walletAddr = getWalletAddress(selectedCrypto, settings);
+        methodString = `crypto:${coin.id}`;
+        const cryptoMeta = [
+          `[Crypto Payment Details]`,
+          `Currency: ${coin.name} (${coin.symbol})`,
+          `Network: ${coin.network}`,
+          `Wallet: ${walletAddr}`,
+          cryptoTxid.trim() ? `TXID: ${cryptoTxid.trim()}` : `TXID: Pending submission by customer`,
+        ].join("\n");
+        notes = notes ? `${notes}\n\n${cryptoMeta}` : cryptoMeta;
+      }
+
+      return createOrder({
         customer_name: form.name,
         customer_email: form.email,
-        customer_phone: form.phone || null,
+        customer_phone: null,
         shipping_address: {
           line1: form.line1,
           city: form.city,
@@ -90,8 +116,8 @@ function Checkout() {
         tax,
         total,
         coupon_id: coupon?.id ?? null,
-        payment_method: "invoice",
-        notes: form.notes || null,
+        payment_method: methodString,
+        notes: notes || null,
         user_id: user?.id ?? null,
         items: cart.map((line) => ({
           product_id: line.productId,
@@ -101,29 +127,180 @@ function Checkout() {
           unit_price: line.price,
           quantity: line.quantity,
         })),
-      }),
+      });
+    },
     onSuccess: (order) => {
       setPlaced(order);
+      if (cryptoTxid.trim()) {
+        setSubmittedTxid(cryptoTxid.trim());
+      }
       clearCart();
     },
     onError: (error: Error) => toast.error(error.message),
   });
 
-  const { data: activeCoupons = [], isLoading: couponsLoading, isError: couponsError } = useQuery(activeCouponsQuery());
-  const { data: allCoupons = [], isLoading: allLoading } = useQuery({ queryKey: ["debug", "all-coupons"], queryFn: () => fetchCoupons() });
+  const { data: activeCoupons = [] } = useQuery(activeCouponsQuery());
 
+  async function handleValidateOrderTxid() {
+    if (!placed || !postOrderTxid.trim()) return;
+    try {
+      setIsSubmittingTxid(true);
+      const updatedNotes = [
+        placed.notes || "",
+        `[Blockchain Validation Proof Submitted: ${new Date().toISOString()}]`,
+        `TXID: ${postOrderTxid.trim()}`,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
+
+      await updateOrderPaymentProof(placed.id, updatedNotes, "payment_submitted");
+      setSubmittedTxid(postOrderTxid.trim());
+      setPostOrderTxid("");
+      toast.success("Payment proof submitted! Your order is being validated.");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to submit transaction proof.");
+    } finally {
+      setIsSubmittingTxid(false);
+    }
+  }
 
   if (placed) {
+    const isCrypto = placed.payment_method?.startsWith("crypto:");
+    const coinId = isCrypto ? placed.payment_method!.replace("crypto:", "") : selectedCrypto;
+    const coin = getCryptoCoin(coinId);
+    const walletAddress = getWalletAddress(coinId, settings);
+    const qrUrl = getQrCodeUrl(walletAddress, coin.qrPrefix);
+
     return (
-      <section className="container-page section-y max-w-xl text-center">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-accent text-accent-foreground">
-          <Check className="h-6 w-6" />
+      <section className="container-page section-y max-w-2xl text-center space-y-8">
+        <div>
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-accent text-accent-foreground">
+            <Check className="h-6 w-6" />
+          </div>
+          <h1 className="display-lg mt-6">Thank you — order confirmed!</h1>
+          <p className="mt-3 text-muted-foreground text-sm">
+            Order <span className="font-semibold text-foreground">{placed.order_number}</span> for{" "}
+            <span className="font-semibold text-foreground">{formatPrice(placed.total)}</span>. A confirmation is on its way to {placed.customer_email}.
+          </p>
         </div>
-        <h1 className="display-lg mt-8">Thank you — your order is confirmed.</h1>
-        <p className="mt-4 text-muted-foreground">
-          Order <span className="text-foreground">{placed.order_number}</span> for{" "}
-          {formatPrice(placed.total)}. A confirmation is on its way to {placed.customer_email}.
-        </p>
+
+        {isCrypto ? (
+          <div className="rounded-xl border border-border bg-surface p-6 text-left shadow-sm space-y-5">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="grid h-9 w-9 place-items-center rounded-lg bg-primary/10 text-primary">
+                  <Wallet className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-base text-foreground">
+                    Crypto Payment & Order Validation
+                  </h3>
+                  <p className="text-xs text-muted-foreground">
+                    Send {formatPrice(placed.total)} in {coin.name} ({coin.symbol})
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-medium text-amber-700 dark:text-amber-400">
+                {submittedTxid ? "Validation Under Review" : "Awaiting Blockchain Transfer"}
+              </span>
+            </div>
+
+            {/* Wallet & QR */}
+            <div className="grid gap-5 sm:grid-cols-[130px_1fr] sm:items-center bg-background p-4 rounded-lg border border-border">
+              <div className="flex flex-col items-center justify-center p-2 bg-white rounded-md border border-border text-center shadow-xs">
+                <img src={qrUrl} alt="Wallet QR Code" className="h-28 w-28 object-contain" />
+                <span className="text-[10px] font-medium text-neutral-600 mt-1 flex items-center gap-1">
+                  <QrCode className="h-3 w-3" /> {coin.symbol}
+                </span>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <span className="text-xs text-muted-foreground">Network:</span>
+                  <p className="text-xs font-semibold text-foreground">{coin.network}</p>
+                </div>
+                <div>
+                  <span className="text-xs text-muted-foreground block mb-1">
+                    Deposit Wallet Address:
+                  </span>
+                  <div className="flex items-center gap-2 rounded-lg border border-border bg-muted/30 p-2">
+                    <span className="flex-1 font-mono text-xs break-all select-all text-foreground">
+                      {walletAddress}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(walletAddress);
+                        setCopiedAddress(true);
+                        toast.success("Wallet address copied!");
+                        setTimeout(() => setCopiedAddress(false), 2000);
+                      }}
+                      className={`inline-flex shrink-0 items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                        copiedAddress
+                          ? "bg-emerald-600 text-white"
+                          : "bg-primary text-primary-foreground hover:bg-accent"
+                      }`}
+                    >
+                      {copiedAddress ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      <span>{copiedAddress ? "Copied" : "Copy"}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Validation Proof Status / Input */}
+            {submittedTxid ? (
+              <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs space-y-1">
+                <div className="flex items-center gap-1.5 font-semibold text-emerald-700 dark:text-emerald-400">
+                  <ShieldCheck className="h-4 w-4" />
+                  <span>Validation Proof Submitted</span>
+                </div>
+                <p className="text-muted-foreground font-mono break-all pt-1">
+                  TXID: {submittedTxid}
+                </p>
+                <div className="pt-2">
+                  <a
+                    href={coin.explorerUrl(submittedTxid)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-primary hover:underline text-[11px] font-medium"
+                  >
+                    <span>View on Blockchain Explorer</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2 rounded-lg border border-border bg-background p-4">
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block">
+                  Submit Transaction Hash (TXID) to Validate Order
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Paste blockchain transaction hash (TXID)…"
+                    value={postOrderTxid}
+                    onChange={(e) => setPostOrderTxid(e.target.value)}
+                    className="flex-1 rounded-md border border-border bg-background px-3 py-2 text-xs font-mono outline-none focus:border-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleValidateOrderTxid}
+                    disabled={!postOrderTxid.trim() || isSubmittingTxid}
+                    className="shrink-0 bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground rounded-md transition-colors hover:bg-accent disabled:opacity-50"
+                  >
+                    {isSubmittingTxid ? "Submitting…" : "Validate"}
+                  </button>
+                </div>
+                <p className="text-[11px] text-muted-foreground">
+                  Submitting your transaction ID allows us to immediately verify your blockchain transfer and fast-track dispatch.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : null}
+
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <Link
             to="/account"
@@ -192,12 +369,6 @@ function Checkout() {
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className={field}
           />
-          <input
-            placeholder="Phone (optional)"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            className={`${field} sm:col-span-2`}
-          />
 
           <h2 className="mt-6 font-display text-2xl sm:col-span-2">Shipping address</h2>
           <input
@@ -236,12 +407,108 @@ function Checkout() {
             className={`${field} sm:col-span-2`}
           />
 
+          {/* Payment Method Selection */}
+          <div className="sm:col-span-2 space-y-4 pt-6 border-t border-border mt-2">
+            <div>
+              <h2 className="font-display text-2xl">Payment Method</h2>
+              <p className="text-xs text-muted-foreground mt-1">
+                Select your preferred payment method. Cryptocurrency provides instant validation and insured, priority dispatch.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("crypto")}
+                className={`flex items-start gap-3 rounded-lg border p-4 text-left transition-all ${
+                  paymentMethod === "crypto"
+                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    : "border-border bg-background hover:border-primary/40 hover:bg-muted/30"
+                }`}
+              >
+                <div
+                  className={`mt-0.5 rounded-full p-1.5 ${
+                    paymentMethod === "crypto"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <Wallet className="h-4 w-4" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-sm text-foreground">Cryptocurrency</span>
+                    <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      Instant · Secure
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    USDT (TRC-20), Bitcoin, Ethereum, Solana & Litecoin
+                  </p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setPaymentMethod("invoice")}
+                className={`flex items-start gap-3 rounded-lg border p-4 text-left transition-all ${
+                  paymentMethod === "invoice"
+                    ? "border-primary bg-primary/5 ring-1 ring-primary"
+                    : "border-border bg-background hover:border-primary/40 hover:bg-muted/30"
+                }`}
+              >
+                <div
+                  className={`mt-0.5 rounded-full p-1.5 ${
+                    paymentMethod === "invoice"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <CreditCard className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="font-semibold text-sm text-foreground">Bank Wire / Invoice</span>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Bank transfer with official invoice dispatched via email
+                  </p>
+                </div>
+              </button>
+            </div>
+
+            {paymentMethod === "crypto" ? (
+              <div className="pt-2">
+                <CryptoPaymentCard
+                  total={total}
+                  selectedCoinId={selectedCrypto}
+                  onSelectCoinId={setSelectedCrypto}
+                  txid={cryptoTxid}
+                  onChangeTxid={setCryptoTxid}
+                  settings={settings}
+                />
+              </div>
+            ) : (
+              <div className="rounded-lg border border-border bg-muted/30 p-4 text-xs text-muted-foreground space-y-1">
+                <p className="font-semibold text-foreground">Bank Transfer Information</p>
+                <p>
+                  Upon placing your order, an official invoice with IBAN/Sort Code and wire transfer
+                  instructions will be sent directly to your email address.
+                </p>
+              </div>
+            )}
+          </div>
+
           <button
             type="submit"
             disabled={orderMutation.isPending}
             className="mt-4 bg-primary px-9 py-4 text-[11px] font-semibold uppercase tracking-[0.16em] text-primary-foreground transition-colors hover:bg-accent disabled:opacity-60 sm:col-span-2"
           >
-            {orderMutation.isPending ? "Placing order…" : `Place order · ${formatPrice(total)}`}
+            {orderMutation.isPending
+              ? "Placing order…"
+              : paymentMethod === "crypto" && cryptoTxid.trim()
+                ? `Validate & Place Order · ${formatPrice(total)}`
+                : paymentMethod === "crypto"
+                  ? `Pay with Crypto · ${formatPrice(total)}`
+                  : `Place order · ${formatPrice(total)}`}
           </button>
         </form>
 

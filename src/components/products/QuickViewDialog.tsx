@@ -93,7 +93,7 @@ export function QuickViewDialog({
                       )}
                       aria-label={`View photo ${idx + 1}`}
                     >
-                      <img src={img} alt="" className="h-full w-full object-cover" />
+                      <MediaFrame src={img} alt="" ratio="aspect-square" className="h-full w-full" />
                     </button>
                   ))}
                 </div>

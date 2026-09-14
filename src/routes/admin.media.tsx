@@ -8,6 +8,7 @@ import { AdminSection } from "@/components/admin/AdminSection";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { deleteMedia, uploadMedia } from "@/lib/api";
+import { resolveMediaUrl } from "@/lib/format";
 import { mediaQuery } from "@/lib/queries";
 import type { MediaAsset } from "@/lib/types";
 
@@ -79,7 +80,15 @@ function AdminMedia() {
           {filtered.map((asset) => (
             <div key={asset.id} className="group overflow-hidden rounded-lg border border-border bg-card">
               <div className="aspect-square overflow-hidden bg-muted">
-                <img src={asset.url} alt={asset.alt ?? asset.file_name} className="h-full w-full object-cover" loading="lazy" />
+                <img
+                  src={resolveMediaUrl(asset.url) ?? ""}
+                  alt={asset.alt ?? asset.file_name}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
               </div>
               <div className="space-y-1.5 p-2.5">
                 <p className="truncate text-xs font-medium text-foreground">{asset.file_name}</p>

@@ -32,7 +32,7 @@ export function ProductCard({
   const displayName = decodeHtml(product.name);
 
   return (
-    <article className="group flex h-full flex-col">
+    <article className="group flex h-full min-w-0 flex-col">
       <div className="relative">
         <Link
           to="/product/$slug"
@@ -106,10 +106,10 @@ export function ProductCard({
         </div>
       </div>
 
-      <div className="mt-5 flex flex-1 flex-col">
-        <p className="label-caps">{product.category?.name ?? "Pharmacy"}</p>
-        <h3 className="mt-1.5 font-display text-lg leading-snug">
-          <Link to="/product/$slug" params={{ slug: product.slug }} className="link-underline">
+      <div className="mt-5 flex min-w-0 flex-1 flex-col">
+        <p className="label-caps truncate">{product.category?.name ?? "Pharmacy"}</p>
+        <h3 className="mt-1.5 w-full min-w-0 font-display text-base leading-snug line-clamp-2 break-words [overflow-wrap:anywhere]" title={displayName}>
+          <Link to="/product/$slug" params={{ slug: product.slug }} className="link-underline block w-full min-w-0 break-words [overflow-wrap:anywhere]">
             {displayName}
           </Link>
         </h3>
